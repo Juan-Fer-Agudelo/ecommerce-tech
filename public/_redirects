@@ -1,0 +1,2 @@
+# Netlify: si no existe un archivo para la ruta (p. ej. /buscar), sirve la app.
+/*  /index.html  200

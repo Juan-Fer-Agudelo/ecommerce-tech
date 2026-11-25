@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { categories, formatPrice, products } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { href } from '../router';
-import { breadcrumbLd, defaults, productLd, useSeo } from '../seo';
+import { SITE_URL, useSeo } from '../seo';
+import { defaults, productMeta, utilityMeta } from '../seoMeta';
 import { Icon } from '../components/Icon';
 import { ProductCard, Stars } from '../components/ProductCard';
 import { SmartImage } from '../components/SmartImage';
@@ -16,22 +17,8 @@ export function ProductPage({ id }: { id: string }) {
 
   useSeo(
     product && productCat
-      ? {
-          title: product.metaTitle,
-          description: product.metaDescription,
-          image: product.metaImage,
-          path: href.product(product.id),
-          type: 'product',
-          jsonLd: [
-            productLd(product),
-            breadcrumbLd([
-              { name: 'Inicio', path: '/' },
-              { name: productCat.name, path: href.category(productCat.id) },
-              { name: product.name, path: href.product(product.id) },
-            ]),
-          ],
-        }
-      : { title: 'Producto no encontrado | Tech Studio', description: defaults.description, path: href.product(id), noindex: true },
+      ? productMeta(SITE_URL, product)
+      : utilityMeta('Producto no encontrado | Tech Studio', defaults.description, href.product(id)),
   );
 
   if (!product) {

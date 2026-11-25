@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { categories, products, type Product } from '../data/products';
 import { href } from '../router';
-import { breadcrumbLd, collectionLd, itemListLd, useSeo } from '../seo';
+import { SITE_URL, useSeo } from '../seo';
+import { categoryMeta, utilityMeta } from '../seoMeta';
 import { ProductCard } from '../components/ProductCard';
 
 type Sort = 'featured' | 'price-asc' | 'price-desc' | 'rating';
@@ -37,24 +38,12 @@ export function Listing({ categoryId, query }: { categoryId?: string; query?: st
 
   useSeo(
     category
-      ? {
-          title: category.metaTitle,
-          description: category.metaDescription,
-          image: list[0]?.metaImage,
-          path: href.category(category.id),
-          jsonLd: [
-            collectionLd(category),
-            breadcrumbLd([{ name: 'Inicio', path: '/' }, { name: category.name, path: href.category(category.id) }]),
-            itemListLd(list),
-          ],
-        }
-      : {
-          // Las búsquedas y categorías inexistentes no se indexan para evitar contenido duplicado.
-          title: `${title} | Tech Studio`,
-          description: `Encuentra ${query ? `"${query}"` : 'ratones, teclados, audífonos, webcams y más'} en Tech Studio. Envío gratis desde $29.`,
-          path: query ? href.search(query) : href.search(''),
-          noindex: true,
-        },
+      ? categoryMeta(SITE_URL, category)
+      : utilityMeta(
+          `${title} | Tech Studio`,
+          `Encuentra ${query ? `"${query}"` : 'ratones, teclados, audífonos, webcams y más'} en Tech Studio. Envío gratis desde $29.`,
+          href.search(query ?? ''),
+        ),
   );
 
   return (
