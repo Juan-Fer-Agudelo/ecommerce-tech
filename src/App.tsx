@@ -1,6 +1,6 @@
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ArrowUpRight, Check, ShoppingBag } from 'lucide-react';
+import { ArrowUpRight, Check, Moon, ShoppingBag, Sun } from 'lucide-react';
 import {
   CRAFT_IMAGE,
   HERO_FEATURED_PRODUCT,
@@ -8,6 +8,7 @@ import {
   type Product,
   type ProductCategory,
 } from './data/products';
+import { DEFAULT_THEME, type ThemeMode } from './theme';
 import { ResilientImage } from './components/ResilientImage';
 import { ProductModal } from './components/ProductModal';
 import { CartDrawer, type CartItem } from './components/CartDrawer';
@@ -66,6 +67,7 @@ const ENGINEERING_TABS: EngineeringTab[] = [
 ];
 
 export default function App() {
+  const [theme, setTheme] = useState<ThemeMode>(DEFAULT_THEME);
   const [selectedCategory, setSelectedCategory] = useState<FilterOption>('Todos');
   const [sortBy, setSortBy] = useState<SortOption>('featured');
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
@@ -76,6 +78,10 @@ export default function App() {
 
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+  }, [theme]);
 
   const filteredProducts = useMemo(() => {
     const base =
@@ -162,48 +168,48 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#070709] text-[#F4F4F6] flex flex-col relative overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--bg-canvas)] text-[var(--text-primary)] flex flex-col relative overflow-x-hidden transition-colors duration-200">
       {/* Subtle architectural ambient spotlight */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-x-0 top-0 h-[560px] bg-[radial-gradient(ellipse_60%_50%_at_70%_0%,rgba(217,160,91,0.09),transparent)]"
+        className="pointer-events-none fixed inset-x-0 top-0 h-[560px] bg-[radial-gradient(ellipse_60%_50%_at_70%_0%,rgba(182,123,52,0.08),transparent)] dark:bg-[radial-gradient(ellipse_60%_50%_at_70%_0%,rgba(217,160,91,0.09),transparent)]"
       />
 
       {/* Top Bar: Strict 3-zone contract */}
-      <header className="sticky top-0 z-40 bg-[#070709]/80 backdrop-blur-xl border-b border-white/[0.06]">
+      <header className="sticky top-0 z-40 bg-[var(--bg-canvas)]/85 backdrop-blur-xl border-b border-[var(--border-hairline)] transition-colors duration-200">
         <div className="max-w-[1320px] mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-8">
           <a
             href="#"
-            className="font-display text-lg font-semibold tracking-tight text-[#F4F4F6] whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[#D9A05B] rounded"
+            className="font-display text-lg font-semibold tracking-tight text-[var(--text-primary)] whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-[var(--accent)] rounded"
           >
             Krono Studio
           </a>
 
           <nav
             aria-label="Navegación principal"
-            className="hidden md:flex items-center gap-8 text-sm font-medium text-[#A1A1AA]"
+            className="hidden md:flex items-center gap-8 text-sm font-medium text-[var(--text-secondary)]"
           >
             <a
               href="#coleccion"
-              className="hover:text-[#F4F4F6] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+              className="hover:text-[var(--text-primary)] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               Colección
             </a>
             <a
               href="#ingenieria"
-              className="hover:text-[#F4F4F6] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+              className="hover:text-[var(--text-primary)] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               Ingeniería
             </a>
             <a
               href="#especificaciones"
-              className="hover:text-[#F4F4F6] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+              className="hover:text-[var(--text-primary)] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               Especificaciones
             </a>
             <a
               href="#contacto"
-              className="hover:text-[#F4F4F6] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+              className="hover:text-[var(--text-primary)] hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               Contacto
             </a>
@@ -212,9 +218,9 @@ export default function App() {
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#101013] hover:bg-[#19191E] border border-white/[0.1] text-xs font-medium text-[#F4F4F6] transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#D9A05B]"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-alt)] border border-[var(--border-hairline)] text-xs font-medium text-[var(--text-primary)] transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
           >
-            <ShoppingBag className="w-3.5 h-3.5 text-[#D9A05B]" />
+            <ShoppingBag className="w-3.5 h-3.5 text-[var(--accent)]" />
             <span className="font-mono-tabular">Bolsa ({totalBagCount})</span>
           </button>
         </div>
@@ -226,7 +232,7 @@ export default function App() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
             <div className="lg:col-span-5 flex flex-col justify-between py-2">
               <div>
-                <div className="flex items-center gap-2 text-xs text-[#A1A1AA]">
+                <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                   <span>Serie 2026</span>
                   <span aria-hidden="true">·</span>
                   <span>Aluminio 6061</span>
@@ -234,18 +240,18 @@ export default function App() {
                   <span>Madrid</span>
                 </div>
 
-                <h1 className="mt-5 font-display text-[clamp(2.5rem,4.6vw,4.25rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-[#F4F4F6] [text-wrap:balance]">
+                <h1 className="mt-5 font-display text-[clamp(2.5rem,4.6vw,4.25rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-[var(--text-primary)] [text-wrap:balance]">
                   Sonido esculpido en metal sólido.
                 </h1>
 
-                <p className="mt-5 text-base leading-relaxed text-[#A1A1AA] max-w-md">
+                <p className="mt-5 text-base leading-relaxed text-[var(--text-secondary)] max-w-md">
                   Monitores de referencia, auriculares planares y electrónica discreta concebidos para ofrecer transparencia acústica absoluta.
                 </p>
 
                 <div className="mt-8 flex flex-wrap items-center gap-3">
                   <a
                     href="#coleccion"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[#F4F4F6] hover:bg-white text-[#070709] text-sm font-semibold transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D9A05B]"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-[var(--cta-bg)] hover:bg-[var(--cta-bg-hover)] text-[var(--cta-text)] text-sm font-semibold transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
                   >
                     <span>Explorar colección</span>
                     <ArrowUpRight className="w-4 h-4" />
@@ -254,31 +260,37 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setActiveProduct(HERO_FEATURED_PRODUCT)}
-                    className="inline-flex items-center justify-center px-5 py-3.5 rounded-xl bg-[#101013] hover:bg-[#19191E] border border-white/[0.1] text-sm font-medium text-[#F4F4F6] transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#D9A05B]"
+                    className="inline-flex items-center justify-center px-5 py-3.5 rounded-xl bg-[var(--bg-surface)] hover:bg-[var(--bg-surface-alt)] border border-[var(--border-hairline)] text-sm font-medium text-[var(--text-primary)] transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
                   >
                     Reference One
                   </button>
                 </div>
               </div>
 
-              <div className="mt-10 pt-6 border-t border-white/[0.08] grid grid-cols-3 gap-4">
+              <div className="mt-10 pt-6 border-t border-[var(--border-hairline)] grid grid-cols-3 gap-4">
                 <div>
-                  <p className="font-mono-tabular text-lg font-medium text-[#F4F4F6]">
+                  <p className="font-mono-tabular text-lg font-medium text-[var(--text-primary)]">
                     28 Hz
                   </p>
-                  <p className="mt-0.5 text-xs text-[#A1A1AA]">Respuesta grave</p>
+                  <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                    Respuesta grave
+                  </p>
                 </div>
                 <div>
-                  <p className="font-mono-tabular text-lg font-medium text-[#F4F4F6]">
+                  <p className="font-mono-tabular text-lg font-medium text-[var(--text-primary)]">
                     0.02 mm
                   </p>
-                  <p className="mt-0.5 text-xs text-[#A1A1AA]">Fresado CNC</p>
+                  <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                    Fresado CNC
+                  </p>
                 </div>
                 <div>
-                  <p className="font-mono-tabular text-lg font-medium text-[#F4F4F6]">
+                  <p className="font-mono-tabular text-lg font-medium text-[var(--text-primary)]">
                     5 años
                   </p>
-                  <p className="mt-0.5 text-xs text-[#A1A1AA]">Garantía directa</p>
+                  <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+                    Garantía directa
+                  </p>
                 </div>
               </div>
             </div>
@@ -287,7 +299,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setActiveProduct(HERO_FEATURED_PRODUCT)}
-                className="group relative w-full aspect-[16/9] lg:aspect-auto lg:min-h-[500px] rounded-2xl overflow-hidden bg-[#101013] border border-white/[0.1] text-left cursor-pointer focus-visible:outline-2 focus-visible:outline-[#D9A05B]"
+                className="group relative w-full aspect-[16/9] lg:aspect-auto lg:min-h-[500px] rounded-2xl overflow-hidden bg-[#101013] border border-[var(--border-hairline)] text-left cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
                 aria-label="Inspeccionar Krono Reference One"
               >
                 <ResilientImage
@@ -298,23 +310,23 @@ export default function App() {
                 />
                 <div
                   aria-hidden="true"
-                  className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"
                 />
-                <div className="absolute bottom-4 inset-x-4 sm:bottom-6 sm:inset-x-6 p-4 sm:p-5 rounded-xl bg-[#070709]/75 backdrop-blur-md border border-white/[0.1] flex flex-wrap items-center justify-between gap-4">
+                <div className="absolute bottom-4 inset-x-4 sm:bottom-6 sm:inset-x-6 p-4 sm:p-5 rounded-xl bg-[var(--bg-surface)]/90 dark:bg-[#070709]/80 backdrop-blur-md border border-[var(--border-hairline)] flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <p className="text-xs text-[#A1A1AA]">
+                    <p className="text-xs text-[var(--text-secondary)]">
                       {HERO_FEATURED_PRODUCT.category} ·{' '}
                       {HERO_FEATURED_PRODUCT.availability}
                     </p>
-                    <p className="mt-0.5 font-display text-lg sm:text-xl font-semibold text-[#F4F4F6]">
+                    <p className="mt-0.5 font-display text-lg sm:text-xl font-semibold text-[var(--text-primary)]">
                       {HERO_FEATURED_PRODUCT.name}
                     </p>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="font-mono-tabular text-base font-medium text-[#F4F4F6]">
+                    <span className="font-mono-tabular text-base font-medium text-[var(--text-primary)]">
                       {formatPrice(HERO_FEATURED_PRODUCT.price)}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#D9A05B] group-hover:translate-x-0.5 transition-transform">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent)] group-hover:translate-x-0.5 transition-transform">
                       <span>Inspeccionar</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
                     </span>
@@ -328,14 +340,14 @@ export default function App() {
         {/* Section 2: Modern Bento Product Grid */}
         <section
           id="coleccion"
-          className="border-t border-white/[0.08] max-w-[1320px] mx-auto px-5 sm:px-8 py-16 lg:py-24"
+          className="border-t border-[var(--border-hairline)] max-w-[1320px] mx-auto px-5 sm:px-8 py-16 lg:py-24"
         >
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
             <div>
-              <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-[-0.02em] text-[#F4F4F6]">
+              <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-[-0.02em] text-[var(--text-primary)]">
                 Colección destacada
               </h2>
-              <p className="mt-2 text-sm text-[#A1A1AA]">
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
                 Sistemas calibrados individualmente con entrega asegurada sin coste.
               </p>
             </div>
@@ -345,7 +357,7 @@ export default function App() {
               <div
                 role="tablist"
                 aria-label="Filtrar por categoría"
-                className="inline-flex items-center gap-1 p-1 rounded-xl bg-[#101013] border border-white/[0.08]"
+                className="inline-flex items-center gap-1 p-1 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-hairline)]"
               >
                 {FILTER_CATEGORIES.map((category) => {
                   const isActive = selectedCategory === category;
@@ -356,10 +368,10 @@ export default function App() {
                       role="tab"
                       aria-selected={isActive}
                       onClick={() => setSelectedCategory(category)}
-                      className={`relative px-4 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#D9A05B] ${
+                      className={`relative px-4 py-2 rounded-lg text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
                         isActive
-                          ? 'text-[#070709]'
-                          : 'text-[#A1A1AA] hover:text-[#F4F4F6]'
+                          ? 'text-[var(--cta-text)]'
+                          : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                       }`}
                     >
                       {isActive && (
@@ -370,7 +382,7 @@ export default function App() {
                             stiffness: 420,
                             damping: 32,
                           }}
-                          className="absolute inset-0 rounded-lg bg-[#F4F4F6]"
+                          className="absolute inset-0 rounded-lg bg-[var(--cta-bg)]"
                           aria-hidden="true"
                         />
                       )}
@@ -387,7 +399,7 @@ export default function App() {
                 id="sort-select"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="px-4 py-2.5 rounded-xl bg-[#101013] border border-white/[0.08] text-xs font-medium text-[#F4F4F6] focus:outline-none focus:border-[#D9A05B] cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-hairline)] text-xs font-medium text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] cursor-pointer"
               >
                 <option value="featured">Orden: Destacados</option>
                 <option value="price-asc">Precio: menor a mayor</option>
@@ -402,12 +414,12 @@ export default function App() {
               return (
                 <article
                   key={product.id}
-                  className="group bg-[#101013] border border-white/[0.08] hover:border-white/[0.18] rounded-2xl p-3 flex flex-col transition-all duration-200 hover:-translate-y-0.5"
+                  className="group bg-[var(--bg-surface)] border border-[var(--border-hairline)] hover:border-[var(--border-hairline-strong)] rounded-2xl p-3 flex flex-col transition-all duration-200 hover:-translate-y-0.5"
                 >
                   <button
                     type="button"
                     onClick={() => setActiveProduct(product)}
-                    className="relative block w-full aspect-[4/3] rounded-xl bg-[#070709] overflow-hidden text-left cursor-pointer focus-visible:outline-2 focus-visible:outline-[#D9A05B]"
+                    className="relative block w-full aspect-[4/3] rounded-xl bg-[#0E0E11] overflow-hidden text-left cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--accent)]"
                     aria-label={`Ver detalles de ${product.name}`}
                   >
                     <ResilientImage
@@ -416,46 +428,46 @@ export default function App() {
                       fallbackTitle={product.name}
                       className="w-full h-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
                     />
-                    <span className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-3 py-1.5 rounded-lg bg-[#070709]/85 backdrop-blur-md border border-white/[0.12] text-xs font-medium text-[#F4F4F6]">
+                    <span className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 px-3 py-1.5 rounded-lg bg-[#070709]/85 backdrop-blur-md border border-white/[0.14] text-xs font-medium text-[#F4F4F6]">
                       Vista rápida
                     </span>
                   </button>
 
                   <div className="px-3 pt-4 pb-2 flex-1 flex flex-col justify-between gap-5">
                     <div>
-                      <div className="flex items-center gap-2 text-xs text-[#A1A1AA]">
+                      <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                         <span>{product.category}</span>
                         <span aria-hidden="true">·</span>
                         <span>{product.availability}</span>
                       </div>
 
-                      <h3 className="mt-1.5 font-display text-lg font-semibold text-[#F4F4F6] tracking-tight">
+                      <h3 className="mt-1.5 font-display text-lg font-semibold text-[var(--text-primary)] tracking-tight">
                         <button
                           type="button"
                           onClick={() => setActiveProduct(product)}
-                          className="text-left hover:text-[#D9A05B] transition-colors cursor-pointer"
+                          className="text-left hover:text-[var(--accent)] transition-colors cursor-pointer"
                         >
                           {product.name}
                         </button>
                       </h3>
 
-                      <p className="mt-1 text-sm text-[#A1A1AA] line-clamp-2">
+                      <p className="mt-1 text-sm text-[var(--text-secondary)] line-clamp-2">
                         {product.subtitle}
                       </p>
                     </div>
 
-                    <div className="pt-3.5 border-t border-white/[0.06] flex items-center justify-between gap-4">
-                      <span className="font-mono-tabular text-base font-medium text-[#F4F4F6]">
+                    <div className="pt-3.5 border-t border-[var(--border-hairline)] flex items-center justify-between gap-4">
+                      <span className="font-mono-tabular text-base font-medium text-[var(--text-primary)]">
                         {formatPrice(product.price)}
                       </span>
 
                       <button
                         type="button"
                         onClick={() => handleAddToCart(product)}
-                        className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer inline-flex items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-[#D9A05B] ${
+                        className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer inline-flex items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
                           isAdded
-                            ? 'bg-[#D9A05B] text-[#070709]'
-                            : 'bg-[#1A1A20] hover:bg-[#F4F4F6] text-[#F4F4F6] hover:text-[#070709] border border-white/[0.08]'
+                            ? 'bg-[var(--accent)] text-white dark:text-[#070709]'
+                            : 'bg-[var(--bg-surface-alt)] hover:bg-[var(--cta-bg)] text-[var(--text-primary)] hover:text-[var(--cta-text)] border border-[var(--border-hairline)]'
                         }`}
                       >
                         {isAdded ? (
@@ -478,12 +490,12 @@ export default function App() {
         {/* Section 3: Interactive Engineering & Craftsmanship */}
         <section
           id="ingenieria"
-          className="border-t border-white/[0.08] max-w-[1320px] mx-auto px-5 sm:px-8 py-16 lg:py-24"
+          className="border-t border-[var(--border-hairline)] max-w-[1320px] mx-auto px-5 sm:px-8 py-16 lg:py-24"
         >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
             <div className="lg:col-span-6 flex items-stretch">
-              <div className="w-full aspect-[4/3] lg:aspect-auto lg:h-full rounded-2xl overflow-hidden bg-[#101013] border border-white/[0.08] p-3">
-                <div className="w-full h-full rounded-xl overflow-hidden">
+              <div className="w-full aspect-[4/3] lg:aspect-auto lg:h-full rounded-2xl overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-hairline)] p-3">
+                <div className="w-full h-full rounded-xl overflow-hidden bg-[#0E0E11]">
                   <ResilientImage
                     src={CRAFT_IMAGE}
                     alt="Mecanizado CNC en aluminio anodizado negro y diales de latón"
@@ -496,10 +508,10 @@ export default function App() {
 
             <div className="lg:col-span-6 flex flex-col justify-between gap-8 py-2">
               <div>
-                <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-[-0.02em] text-[#F4F4F6] [text-wrap:balance]">
+                <h2 className="font-display text-3xl sm:text-4xl font-semibold tracking-[-0.02em] text-[var(--text-primary)] [text-wrap:balance]">
                   Ingeniería pensada para durar décadas.
                 </h2>
-                <p className="mt-3 text-sm sm:text-base leading-relaxed text-[#A1A1AA]">
+                <p className="mt-3 text-sm sm:text-base leading-relaxed text-[var(--text-secondary)]">
                   Explora los principios constructivos detrás de cada chasis y etapa de amplificación Krono Studio.
                 </p>
 
@@ -512,10 +524,10 @@ export default function App() {
                         key={tab.id}
                         type="button"
                         onClick={() => setActiveEngTab(tab.id)}
-                        className={`px-4 py-2.5 rounded-xl text-xs font-medium border transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[#D9A05B] ${
+                        className={`px-4 py-2.5 rounded-xl text-xs font-medium border transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
                           active
-                            ? 'bg-[#F4F4F6] border-[#F4F4F6] text-[#070709]'
-                            : 'bg-[#101013] border-white/[0.08] text-[#A1A1AA] hover:text-[#F4F4F6] hover:border-white/20'
+                            ? 'bg-[var(--cta-bg)] border-[var(--cta-bg)] text-[var(--cta-text)]'
+                            : 'bg-[var(--bg-surface)] border-[var(--border-hairline)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hairline-strong)]'
                         }`}
                       >
                         {tab.title}
@@ -526,7 +538,7 @@ export default function App() {
 
                 <div
                   id="especificaciones"
-                  className="mt-6 rounded-2xl bg-[#101013] border border-white/[0.08] p-6"
+                  className="mt-6 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-hairline)] p-6"
                 >
                   <AnimatePresence mode="wait">
                     <motion.div
@@ -536,20 +548,20 @@ export default function App() {
                       exit={{ opacity: 0, y: -6 }}
                       transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
                     >
-                      <h3 className="font-display text-lg font-semibold text-[#F4F4F6]">
+                      <h3 className="font-display text-lg font-semibold text-[var(--text-primary)]">
                         {currentEngTab.title}
                       </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-[#A1A1AA]">
+                      <p className="mt-2 text-sm leading-relaxed text-[var(--text-secondary)]">
                         {currentEngTab.summary}
                       </p>
 
-                      <dl className="mt-6 pt-4 border-t border-white/[0.08] grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <dl className="mt-6 pt-4 border-t border-[var(--border-hairline)] grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {currentEngTab.metrics.map((metric) => (
                           <div key={metric.label}>
-                            <dt className="text-xs text-[#A1A1AA]">
+                            <dt className="text-xs text-[var(--text-secondary)]">
                               {metric.label}
                             </dt>
-                            <dd className="mt-1 font-mono-tabular text-sm font-medium text-[#F4F4F6]">
+                            <dd className="mt-1 font-mono-tabular text-sm font-medium text-[var(--text-primary)]">
                               {metric.value}
                             </dd>
                           </div>
@@ -567,28 +579,30 @@ export default function App() {
       {/* Section 4: Quiet Modern Footer */}
       <footer
         id="contacto"
-        className="border-t border-white/[0.08] bg-[#050507]"
+        className="border-t border-[var(--border-hairline)] bg-[var(--bg-footer)] transition-colors duration-200"
       >
         <div className="max-w-[1320px] mx-auto px-5 sm:px-8 py-12 lg:py-16 grid grid-cols-1 md:grid-cols-12 gap-10">
           <div className="md:col-span-5 space-y-3">
-            <p className="font-display text-lg font-semibold text-[#F4F4F6]">
+            <p className="font-display text-lg font-semibold text-[var(--text-primary)]">
               Krono Studio
             </p>
-            <p className="text-sm text-[#A1A1AA] max-w-sm">
+            <p className="text-sm text-[var(--text-secondary)] max-w-sm">
               Objetos acústicos de precisión diseñados en Madrid. Audiciones privadas con cita previa de lunes a sábado.
             </p>
-            <p className="text-xs text-[#71717A] pt-1">
+            <p className="text-xs text-[var(--text-muted)] pt-1">
               Calle de Almagro 24, Madrid · hola@kronostudio.es
             </p>
           </div>
 
           <div className="md:col-span-3 space-y-2.5 text-sm">
-            <p className="text-xs font-medium text-[#F4F4F6]">Navegación</p>
-            <ul className="space-y-2 text-[#A1A1AA]">
+            <p className="text-xs font-medium text-[var(--text-primary)]">
+              Navegación
+            </p>
+            <ul className="space-y-2 text-[var(--text-secondary)]">
               <li>
                 <a
                   href="#coleccion"
-                  className="hover:text-[#F4F4F6] transition-colors"
+                  className="hover:text-[var(--text-primary)] transition-colors"
                 >
                   Colección
                 </a>
@@ -596,7 +610,7 @@ export default function App() {
               <li>
                 <a
                   href="#ingenieria"
-                  className="hover:text-[#F4F4F6] transition-colors"
+                  className="hover:text-[var(--text-primary)] transition-colors"
                 >
                   Ingeniería
                 </a>
@@ -604,7 +618,7 @@ export default function App() {
               <li>
                 <a
                   href="#especificaciones"
-                  className="hover:text-[#F4F4F6] transition-colors"
+                  className="hover:text-[var(--text-primary)] transition-colors"
                 >
                   Especificaciones
                 </a>
@@ -613,14 +627,14 @@ export default function App() {
           </div>
 
           <div className="md:col-span-4 space-y-3">
-            <p className="text-xs font-medium text-[#F4F4F6]">
+            <p className="text-xs font-medium text-[var(--text-primary)]">
               Boletín de lanzamientos
             </p>
-            <p className="text-xs text-[#A1A1AA]">
+            <p className="text-xs text-[var(--text-secondary)]">
               Recibe avisos de nuevas series limitadas y disponibilidad de stock.
             </p>
             {newsletterSubscribed ? (
-              <p className="text-xs font-medium text-[#D9A05B] py-2">
+              <p className="text-xs font-medium text-[var(--accent)] py-2">
                 Suscripción confirmada. Te avisaremos en el próximo lanzamiento.
               </p>
             ) : (
@@ -635,11 +649,11 @@ export default function App() {
                   value={newsletterEmail}
                   onChange={(e) => setNewsletterEmail(e.target.value)}
                   placeholder="tu@correo.com"
-                  className="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl bg-[#101013] border border-white/[0.1] text-xs text-[#F4F4F6] placeholder:text-[#71717A] focus:outline-none focus:border-[#D9A05B]"
+                  className="flex-1 min-w-0 px-3.5 py-2.5 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-hairline)] text-xs text-[var(--text-primary)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2.5 rounded-xl bg-[#F4F4F6] hover:bg-white text-[#070709] text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                  className="px-4 py-2.5 rounded-xl bg-[var(--cta-bg)] hover:bg-[var(--cta-bg-hover)] text-[var(--cta-text)] text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                 >
                   Suscribirse
                 </button>
@@ -648,10 +662,37 @@ export default function App() {
           </div>
         </div>
 
-        <div className="border-t border-white/[0.06]">
-          <div className="max-w-[1320px] mx-auto px-5 sm:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#71717A]">
+        <div className="border-t border-[var(--border-hairline)]">
+          <div className="max-w-[1320px] mx-auto px-5 sm:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
             <p>© 2026 Krono Studio. Todos los derechos reservados.</p>
-            <p>Envíos asegurados internacionales · Garantía de 5 años</p>
+
+            <div className="flex items-center gap-4">
+              <span>Envíos asegurados internacionales</span>
+              <button
+                type="button"
+                onClick={() =>
+                  setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
+                }
+                aria-label={
+                  theme === 'dark'
+                    ? 'Cambiar a modo claro'
+                    : 'Cambiar a modo oscuro'
+                }
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-hairline)] text-[var(--text-primary)] hover:border-[var(--border-hairline-strong)] transition-colors cursor-pointer whitespace-nowrap shrink-0"
+              >
+                {theme === 'dark' ? (
+                  <>
+                    <Sun className="w-3.5 h-3.5 text-[var(--accent)]" />
+                    <span>Modo claro</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-3.5 h-3.5 text-[var(--accent)]" />
+                    <span>Modo oscuro</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </footer>

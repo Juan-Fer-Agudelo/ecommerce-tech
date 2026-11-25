@@ -21,11 +21,14 @@ export function ResilientImage({
       <div
         role="img"
         aria-label={alt}
-        className={`flex flex-col items-center justify-center gap-3 bg-gradient-to-br from-[#16161B] via-[#121215] to-[#0B0B0D] text-[#A1A1AA] border border-white/[0.06] ${className}`}
+        className={`flex flex-col items-center justify-center gap-3 bg-[var(--bg-surface-alt)] text-[var(--text-secondary)] border border-[var(--border-hairline)] ${className}`}
       >
-        <AudioWaveform className="w-8 h-8 text-[#D9A05B]/70" strokeWidth={1.5} />
+        <AudioWaveform
+          className="w-8 h-8 text-[var(--accent)]"
+          strokeWidth={1.5}
+        />
         {fallbackTitle && (
-          <span className="text-xs font-medium tracking-wide text-[#A1A1AA] px-4 text-center">
+          <span className="text-xs font-medium tracking-wide text-[var(--text-secondary)] px-4 text-center">
             {fallbackTitle}
           </span>
         )}
