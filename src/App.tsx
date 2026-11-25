@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ArrowUpRight, Check, Moon, ShoppingBag, Sun } from 'lucide-react';
+import { ArrowUpRight, Check, Minus, Moon, Plus, ShoppingBag, Sun } from 'lucide-react';
 import {
   CRAFT_IMAGE,
   HERO_FEATURED_PRODUCT,
@@ -71,7 +71,28 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<FilterOption>('Todos');
   const [sortBy, setSortBy] = useState<SortOption>('featured');
   const [activeProduct, setActiveProduct] = useState<Product | null>(null);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => [
+    {
+      product: PRODUCTS[0],
+      finish: PRODUCTS[0].finishes[0],
+      quantity: 2,
+    },
+    {
+      product: PRODUCTS[1],
+      finish: PRODUCTS[1].finishes[0],
+      quantity: 1,
+    },
+    {
+      product: PRODUCTS[2],
+      finish: PRODUCTS[2].finishes[0],
+      quantity: 1,
+    },
+    {
+      product: PRODUCTS[5],
+      finish: PRODUCTS[5].finishes[0],
+      quantity: 1,
+    },
+  ]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [recentlyAddedId, setRecentlyAddedId] = useState<string | null>(null);
   const [activeEngTab, setActiveEngTab] = useState<string>('01');
@@ -411,6 +432,16 @@ export default function App() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProducts.map((product) => {
               const isAdded = recentlyAddedId === product.id;
+              const defaultFinish = product.finishes[0];
+              const totalProductQty = cartItems
+                .filter((item) => item.product.id === product.id)
+                .reduce((sum, item) => sum + item.quantity, 0);
+              const defaultFinishEntry = cartItems.find(
+                (item) =>
+                  item.product.id === product.id &&
+                  item.finish === defaultFinish
+              );
+
               return (
                 <article
                   key={product.id}
@@ -461,24 +492,58 @@ export default function App() {
                         {formatPrice(product.price)}
                       </span>
 
-                      <button
-                        type="button"
-                        onClick={() => handleAddToCart(product)}
-                        className={`px-4 py-2 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer inline-flex items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
-                          isAdded
-                            ? 'bg-[var(--accent)] text-white dark:text-[#070709]'
-                            : 'bg-[var(--bg-surface-alt)] hover:bg-[var(--cta-bg)] text-[var(--text-primary)] hover:text-[var(--cta-text)] border border-[var(--border-hairline)]'
-                        }`}
-                      >
-                        {isAdded ? (
-                          <>
-                            <Check className="w-3.5 h-3.5" />
-                            <span>Añadido</span>
-                          </>
-                        ) : (
-                          <span>Añadir</span>
-                        )}
-                      </button>
+                      {totalProductQty > 0 && !isAdded ? (
+                        <div className="inline-flex items-center rounded-xl border border-[var(--border-hairline)] bg-[var(--bg-surface-alt)]">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleUpdateQuantity(
+                                product.id,
+                                defaultFinishEntry?.finish ??
+                                  cartItems.find(
+                                    (item) => item.product.id === product.id
+                                  )?.finish ??
+                                  defaultFinish,
+                                -1
+                              )
+                            }
+                            aria-label={`Quitar una unidad de ${product.name}`}
+                            className="w-10 h-10 flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                          >
+                            <Minus className="w-3.5 h-3.5" />
+                          </button>
+                          <span className="w-7 text-center font-mono-tabular text-xs font-semibold text-[var(--text-primary)]">
+                            {totalProductQty}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleAddToCart(product, defaultFinish)}
+                            aria-label={`Añadir otra unidad de ${product.name}`}
+                            className="w-10 h-10 flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleAddToCart(product)}
+                          className={`min-h-[40px] px-4 py-2 rounded-xl text-xs font-semibold transition-colors whitespace-nowrap shrink-0 cursor-pointer inline-flex items-center gap-1.5 focus-visible:outline-2 focus-visible:outline-[var(--accent)] ${
+                            isAdded
+                              ? 'bg-[var(--accent)] text-white dark:text-[#070709]'
+                              : 'bg-[var(--bg-surface-alt)] hover:bg-[var(--cta-bg)] text-[var(--text-primary)] hover:text-[var(--cta-text)] border border-[var(--border-hairline)]'
+                          }`}
+                        >
+                          {isAdded ? (
+                            <>
+                              <Check className="w-3.5 h-3.5" />
+                              <span>Añadido</span>
+                            </>
+                          ) : (
+                            <span>Añadir</span>
+                          )}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </article>
