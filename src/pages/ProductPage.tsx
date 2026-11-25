@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { categories, formatPrice, products } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { href } from '../router';
+import { breadcrumbLd, defaults, productLd, useSeo } from '../seo';
 import { Icon } from '../components/Icon';
 import { ProductCard, Stars } from '../components/ProductCard';
 import { SmartImage } from '../components/SmartImage';
@@ -11,6 +12,27 @@ export function ProductPage({ id }: { id: string }) {
   const { add } = useCart();
   const [color, setColor] = useState(product?.colors[0].name ?? '');
   const [qty, setQty] = useState(1);
+  const productCat = categories.find((c) => c.id === product?.category);
+
+  useSeo(
+    product && productCat
+      ? {
+          title: product.metaTitle,
+          description: product.metaDescription,
+          image: product.metaImage,
+          path: href.product(product.id),
+          type: 'product',
+          jsonLd: [
+            productLd(product),
+            breadcrumbLd([
+              { name: 'Inicio', path: '/' },
+              { name: productCat.name, path: href.category(productCat.id) },
+              { name: product.name, path: href.product(product.id) },
+            ]),
+          ],
+        }
+      : { title: 'Producto no encontrado | Tech Studio', description: defaults.description, path: href.product(id), noindex: true },
+  );
 
   if (!product) {
     return (
@@ -21,7 +43,7 @@ export function ProductPage({ id }: { id: string }) {
     );
   }
 
-  const cat = categories.find((c) => c.id === product.category)!;
+  const cat = productCat!;
   const related = products.filter((p) => p.category === product.category && p.id !== product.id)
     .concat(products.filter((p) => p.category !== product.category && p.badge === 'Más vendido'))
     .slice(0, 4);

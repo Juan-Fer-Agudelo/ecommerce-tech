@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { categories, heroImages, products } from '../data/products';
 import { href } from '../router';
+import { defaults, itemListLd, organizationLd, useSeo, websiteLd } from '../seo';
 import { Hero } from '../components/Hero';
 import { Icon } from '../components/Icon';
 import { ProductCard } from '../components/ProductCard';
@@ -20,6 +21,7 @@ const perks = [
 ];
 
 export function Home() {
+  useSeo({ ...defaults, path: '/', jsonLd: [organizationLd(), websiteLd(), itemListLd(products)] });
   const [tab, setTab] = useState(tabs[0].id);
   const active = tabs.find((t) => t.id === tab)!;
 

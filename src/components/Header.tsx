@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { categories, products } from '../data/products';
 import { useCart } from '../context/CartContext';
-import { href } from '../router';
+import { href, navigate, ROUTE_EVENT } from '../router';
 import { Icon } from './Icon';
 
 const announcements = [
@@ -36,13 +36,13 @@ export function Header() {
       setMobile(false);
       setSearchOpen(false);
     };
-    window.addEventListener('hashchange', close);
-    return () => window.removeEventListener('hashchange', close);
+    window.addEventListener(ROUTE_EVENT, close);
+    return () => window.removeEventListener(ROUTE_EVENT, close);
   }, []);
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    if (q.trim()) window.location.hash = href.search(q.trim());
+    if (q.trim()) navigate(href.search(q.trim()));
   };
 
   return (
