@@ -3,14 +3,14 @@
 
 @layer base {
   :root {
-    --font-display: 'Outfit', system-ui, sans-serif;
+    --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
     --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
   }
 
   html {
     font-family: var(--font-sans);
-    background-color: #0B0B0D;
+    background-color: #070709;
     color: #F4F4F6;
     letter-spacing: 0.01em;
   }
