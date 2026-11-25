@@ -5,23 +5,22 @@ import { href } from '../router';
 import { SITE_URL, useSeo } from '../seo';
 import { defaults, productMeta, utilityMeta } from '../seoMeta';
 import { Icon } from '../components/Icon';
-import { ProductCard, Stars } from '../components/ProductCard';
+import { amazonLinkProps, ProductCard } from '../components/ProductCard';
 import { SmartImage } from '../components/SmartImage';
 
 export function ProductPage({ id }: { id: string }) {
   const product = products.find((p) => p.id === id);
   const { add } = useCart();
-  const [color, setColor] = useState(product?.colors[0].name ?? '');
   const [qty, setQty] = useState(1);
-  const productCat = categories.find((c) => c.id === product?.category);
+  const cat = categories.find((c) => c.id === product?.category);
 
   useSeo(
-    product && productCat
+    product && cat
       ? productMeta(SITE_URL, product)
       : utilityMeta('Producto no encontrado | Tech Studio', defaults.description, href.product(id)),
   );
 
-  if (!product) {
+  if (!product || !cat) {
     return (
       <div className="container empty">
         <h1>Producto no encontrado</h1>
@@ -30,9 +29,9 @@ export function ProductPage({ id }: { id: string }) {
     );
   }
 
-  const cat = productCat!;
-  const related = products.filter((p) => p.category === product.category && p.id !== product.id)
-    .concat(products.filter((p) => p.category !== product.category && p.badge === 'Más vendido'))
+  const related = products
+    .filter((p) => p.category === product.category && p.id !== product.id)
+    .sort((a, b) => Number(b.brand === product.brand) - Number(a.brand === product.brand))
     .slice(0, 4);
 
   return (
@@ -48,60 +47,62 @@ export function ProductPage({ id }: { id: string }) {
         </div>
 
         <div className="pdp-info">
-          <span className="eyebrow">{cat.name}</span>
+          <span className="eyebrow">{product.brand} · {cat.name}</span>
           <h1>{product.name}</h1>
           <p className="pdp-short">{product.short}</p>
-          <Stars rating={product.rating} reviews={product.reviews} />
 
-          <div className="price price-lg">
-            {formatPrice(product.price)}
-            {product.oldPrice && (
-              <>
-                <s>{formatPrice(product.oldPrice)}</s>
-                <span className="save">Ahorras {formatPrice(product.oldPrice - product.price)}</span>
-              </>
-            )}
-          </div>
-
-          <div className="option">
-            <p>Color: <strong>{color}</strong></p>
-            <div className="swatches swatches-lg">
-              {product.colors.map((c) => (
-                <button key={c.name} className={`swatch ${c.name === color ? 'on' : ''}`} style={{ background: c.hex }} aria-label={c.name} aria-pressed={c.name === color} onClick={() => setColor(c.name)} />
-              ))}
-            </div>
-          </div>
-
-          <div className="buy-row">
-            <div className="qty qty-lg">
-              <button aria-label="Quitar uno" onClick={() => setQty((q) => Math.max(1, q - 1))}><Icon name="minus" size={18} /></button>
-              <span>{qty}</span>
-              <button aria-label="Añadir uno" onClick={() => setQty((q) => q + 1)}><Icon name="plus" size={18} /></button>
-            </div>
-            <button className="btn btn-primary btn-grow" onClick={() => add(product.id, color, qty)}>
-              Añadir al carrito
-            </button>
-          </div>
+          {product.price ? (
+            <>
+              <div className="price price-lg">
+                {formatPrice(product.price)}
+                {product.oldPrice && (
+                  <>
+                    <s>{formatPrice(product.oldPrice)}</s>
+                    <span className="save">Ahorras {formatPrice(product.oldPrice - product.price)}</span>
+                  </>
+                )}
+              </div>
+              <div className="buy-row">
+                <div className="qty qty-lg">
+                  <button aria-label="Quitar uno" onClick={() => setQty((q) => Math.max(1, q - 1))}><Icon name="minus" size={18} /></button>
+                  <span>{qty}</span>
+                  <button aria-label="Añadir uno" onClick={() => setQty((q) => q + 1)}><Icon name="plus" size={18} /></button>
+                </div>
+                <button className="btn btn-primary btn-grow" onClick={() => add(product.id, '', qty)}>
+                  Añadir al carrito
+                </button>
+              </div>
+              <a className="btn btn-amazon btn-block" href={product.amazonUrl} {...amazonLinkProps}>
+                Ver en Amazon
+              </a>
+              <p className="price-note">{product.priceNote}. Puede haber cambiado; confirma el precio en Amazon.</p>
+            </>
+          ) : (
+            <>
+              <a className="btn btn-amazon btn-block btn-amazon-lg" href={product.amazonUrl} {...amazonLinkProps}>
+                Ver precio en Amazon
+              </a>
+              <p className="price-note">No tenemos un precio confirmado de este producto. Consulta el precio actual en Amazon.</p>
+            </>
+          )}
 
           <ul className="pdp-perks">
-            <li><Icon name="truck" size={20} /> Envío gratis y entrega en 2 a 4 días hábiles</li>
-            <li><Icon name="return" size={20} /> Devoluciones gratis durante 30 días</li>
-            <li><Icon name="shield" size={20} /> Garantía limitada de 2 años</li>
+            <li><Icon name="shield" size={20} /> Producto original de {product.brand}</li>
+            <li><Icon name="truck" size={20} /> Vendido y enviado a través de Amazon</li>
+            <li><Icon name="return" size={20} /> Devoluciones según la política de Amazon</li>
           </ul>
 
           <details open>
             <summary>Descripción</summary>
-            <p>{product.description}</p>
+            <p>{product.short}. Marca: {product.brand}.</p>
           </details>
           <details>
-            <summary>Características</summary>
+            <summary>Datos del producto</summary>
             <ul className="features">
-              {product.features.map((f) => <li key={f}>{f}</li>)}
+              <li>Marca: {product.brand}</li>
+              <li>Categoría: {cat.name}</li>
+              <li>Código de Amazon (ASIN): {product.asin}</li>
             </ul>
-          </details>
-          <details>
-            <summary>En la caja</summary>
-            <p>{product.name}, cable o receptor según el modelo, guía rápida y tarjeta de garantía.</p>
           </details>
         </div>
       </div>

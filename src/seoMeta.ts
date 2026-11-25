@@ -9,9 +9,9 @@ import { href } from './router';
 export const SITE_NAME = 'Tech Studio';
 
 export const defaults = {
-  title: 'Tech Studio | Ratones, teclados, audio y gaming',
+  title: 'Tech Studio | Ratones, teclados, cámaras y audífonos',
   description:
-    'Tienda online de periféricos: ratones, teclados, audífonos, webcams, parlantes y equipo gaming. Envío gratis desde $29, devoluciones en 30 días y 2 años de garantía.',
+    'Tienda online de tecnología con productos reales de Amazon: ratones, teclados, cámaras web, audífonos de diadema e in-ears de Logitech, Apple, Sony, Razer, Bose y más.',
   image: defaultMetaImage,
 };
 
@@ -21,7 +21,7 @@ export interface PageMeta {
   title: string;
   description: string;
   image: string;
-  /** Ruta canónica, p. ej. "/p/ts-glide-pro". */
+  /** Ruta canónica, p. ej. "/p/mx-master-3s". */
   path: string;
   type: 'website' | 'product';
   noindex: boolean;
@@ -102,10 +102,10 @@ export function headTags(meta: PageMeta, base: string): HeadTag[] {
     m('property', 'og:description', meta.description),
     m('property', 'og:url', url),
     m('property', 'og:image', meta.image),
-    m('property', 'og:image:width', '1200'),
-    m('property', 'og:image:height', '630'),
+    // Las fotos de producto son cuadradas; solo las imágenes generales son 1200x630.
+    ...(meta.type === 'product' ? [] : [m('property', 'og:image:width', '1200'), m('property', 'og:image:height', '630')]),
     m('property', 'og:image:alt', meta.title),
-    m('name', 'twitter:card', 'summary_large_image'),
+    m('name', 'twitter:card', meta.type === 'product' ? 'summary' : 'summary_large_image'),
     m('name', 'twitter:title', meta.title),
     m('name', 'twitter:description', meta.description),
     m('name', 'twitter:image', meta.image),
@@ -205,23 +205,21 @@ export function productLd(base: string, p: Product): JsonLd {
   const cat = categories.find((c) => c.id === p.category);
   const nextYear = new Date();
   nextYear.setFullYear(nextYear.getFullYear() + 1);
-  return {
+  const ld: JsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     '@id': base + href.product(p.id) + '#product',
     sku: p.id,
     name: p.name,
-    description: p.description,
+    description: p.short,
     image: [p.metaImage, p.image],
     category: cat?.name,
-    brand: { '@type': 'Brand', name: SITE_NAME },
-    color: p.colors.map((c) => c.name).join(', '),
-    aggregateRating: { '@type': 'AggregateRating', ratingValue: p.rating, reviewCount: p.reviews, bestRating: 5 },
+    brand: { '@type': 'Brand', name: p.brand },
     offers: {
       '@type': 'Offer',
       url: base + href.product(p.id),
       priceCurrency: 'USD',
-      price: p.price.toFixed(2),
+      price: (p.price ?? 0).toFixed(2),
       priceValidUntil: nextYear.toISOString().slice(0, 10),
       availability: 'https://schema.org/InStock',
       itemCondition: 'https://schema.org/NewCondition',
@@ -229,7 +227,7 @@ export function productLd(base: string, p: Product): JsonLd {
       shippingDetails: {
         '@type': 'OfferShippingDetails',
         shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'CO' },
-        shippingRate: { '@type': 'MonetaryAmount', value: p.price >= 29 ? 0 : 5, currency: 'USD' },
+        shippingRate: { '@type': 'MonetaryAmount', value: (p.price ?? 0) >= 29 ? 0 : 5, currency: 'USD' },
         deliveryTime: {
           '@type': 'ShippingDeliveryTime',
           handlingTime: { '@type': 'QuantitativeValue', minValue: 0, maxValue: 1, unitCode: 'DAY' },
@@ -246,4 +244,7 @@ export function productLd(base: string, p: Product): JsonLd {
       },
     },
   };
+  // Sin precio confirmado no se publica la oferta.
+  if (!p.price) delete ld.offers;
+  return ld;
 }

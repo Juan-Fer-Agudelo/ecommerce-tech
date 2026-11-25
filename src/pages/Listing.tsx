@@ -5,16 +5,23 @@ import { SITE_URL, useSeo } from '../seo';
 import { categoryMeta, utilityMeta } from '../seoMeta';
 import { ProductCard } from '../components/ProductCard';
 
-type Sort = 'featured' | 'price-asc' | 'price-desc' | 'rating';
+type Sort = 'featured' | 'price-asc' | 'price-desc' | 'discount';
+
+/** Ordena por precio y deja al final los productos sin precio confirmado. */
+const byPrice = (dir: 1 | -1) => (a: Product, b: Product) => {
+  if (a.price === undefined || b.price === undefined) return Number(a.price === undefined) - Number(b.price === undefined);
+  return dir * (a.price - b.price);
+};
+const saving = (p: Product) => (p.price && p.oldPrice ? p.oldPrice - p.price : 0);
 
 const sorters: Record<Sort, (a: Product, b: Product) => number> = {
   featured: () => 0,
-  'price-asc': (a, b) => a.price - b.price,
-  'price-desc': (a, b) => b.price - a.price,
-  rating: (a, b) => b.rating - a.rating,
+  'price-asc': byPrice(1),
+  'price-desc': byPrice(-1),
+  discount: (a, b) => saving(b) - saving(a),
 };
 
-const normalize = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const normalize = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 export function Listing({ categoryId, query }: { categoryId?: string; query?: string }) {
   const [sort, setSort] = useState<Sort>('featured');
@@ -27,7 +34,7 @@ export function Listing({ categoryId, query }: { categoryId?: string; query?: st
     if (query) {
       const q = normalize(query);
       items = items.filter((p) =>
-        normalize([p.name, p.short, p.category, p.badge ?? '', categories.find((c) => c.id === p.category)?.name ?? ''].join(' ')).includes(q),
+        normalize([p.name, p.brand, p.short, p.category, p.badge ?? '', categories.find((c) => c.id === p.category)?.name ?? ''].join(' ')).includes(q),
       );
     }
     if (onlySale) items = items.filter((p) => p.oldPrice);
@@ -71,7 +78,7 @@ export function Listing({ categoryId, query }: { categoryId?: string; query?: st
             <option value="featured">Destacados</option>
             <option value="price-asc">Precio: menor a mayor</option>
             <option value="price-desc">Precio: mayor a menor</option>
-            <option value="rating">Mejor calificados</option>
+            <option value="discount">Mayor descuento</option>
           </select>
         </div>
       </div>

@@ -46,12 +46,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const value = useMemo<CartState>(() => {
     const lines = raw
       .map((l) => ({ ...l, product: products.find((p) => p.id === l.productId)! }))
-      .filter((l) => l.product);
+      .filter((l) => l.product?.price);
     const same = (l: CartLine, id: string, c: string) => l.productId === id && l.color === c;
     return {
       lines,
       count: lines.reduce((s, l) => s + l.qty, 0),
-      subtotal: lines.reduce((s, l) => s + l.qty * l.product.price, 0),
+      subtotal: lines.reduce((s, l) => s + l.qty * (l.product.price ?? 0), 0),
       isOpen,
       open: () => setOpen(true),
       close: () => setOpen(false),

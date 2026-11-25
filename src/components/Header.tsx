@@ -5,14 +5,14 @@ import { href, navigate, ROUTE_EVENT } from '../router';
 import { Icon } from './Icon';
 
 const announcements = [
-  'Envío gratis en pedidos desde $29',
-  'Devoluciones gratis durante 30 días',
-  'Hasta 25% de descuento en audio esta semana',
+  'Productos reales de Amazon: ratones, teclados, cámaras y audífonos',
+  'Cada producto enlaza a su página en Amazon',
+  'Proyecto académico de demostración',
 ];
 
 const navItems = [
   { label: 'Productos', mega: true },
-  { label: 'Gaming', to: href.category('gaming') },
+  { label: 'Audífonos', to: href.category('diademas') },
   { label: 'Ofertas', to: href.search('oferta') },
   { label: 'Soporte', to: '#soporte' },
 ];
@@ -131,11 +131,11 @@ export function Header() {
                   </div>
                 ))}
               </div>
-              <a href={href.category('gaming')} className="mega-promo">
+              <a href={href.category('inears')} className="mega-promo">
                 <img src={categories[4].image} alt="" />
                 <div>
-                  <span className="eyebrow">Nuevo</span>
-                  <strong>Línea Strike para gaming</strong>
+                  <span className="eyebrow">In-ears</span>
+                  <strong>AirPods, Galaxy Buds, Sony y más</strong>
                   <span className="link-arrow">Ver colección</span>
                 </div>
               </a>

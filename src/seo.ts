@@ -29,10 +29,11 @@ export function useSeo(meta: PageMeta) {
         }).content = t.content;
       }
     }
-    // Quita etiquetas de precio si la página actual no es un producto.
-    if (meta.type !== 'product') {
-      document.head.querySelectorAll('meta[property^="product:"]').forEach((el) => el.remove());
-    }
+    // Quita las etiquetas que la página actual no declara (precio, tamaño de imagen).
+    const current = new Set(headTags(meta, SITE_URL).map((t) => (t.kind === 'meta' ? t.key : '')));
+    document.head.querySelectorAll('meta[property^="product:"], meta[property^="og:image:"]').forEach((el) => {
+      if (!current.has(el.getAttribute('property') ?? '')) el.remove();
+    });
     upsert('#ld-json', () => Object.assign(document.createElement('script'), { id: 'ld-json', type: 'application/ld+json' })).textContent =
       jsonLdText(meta, SITE_URL);
     // key (contenido serializado) evita re-ejecutar el efecto por objetos nuevos con el mismo contenido.

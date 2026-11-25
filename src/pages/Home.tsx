@@ -15,10 +15,10 @@ const tabs = [
 ];
 
 const perks = [
-  { icon: 'truck', title: 'Envío gratis', text: 'En pedidos desde $29' },
-  { icon: 'return', title: 'Devoluciones en 30 días', text: 'Sin preguntas' },
-  { icon: 'shield', title: 'Garantía de 2 años', text: 'En todos los productos' },
-  { icon: 'leaf', title: 'Plástico reciclado', text: 'En el 70% del catálogo' },
+  { icon: 'shield', title: 'Productos originales', text: 'De marcas reconocidas' },
+  { icon: 'cart', title: 'Compra en Amazon', text: 'Enlace directo a cada producto' },
+  { icon: 'search', title: 'Precios con fuente', text: 'Indicamos de dónde sale cada precio' },
+  { icon: 'globe', title: '5 categorías', text: 'Ratones, teclados, cámaras y audio' },
 ];
 
 export function Home() {
@@ -66,15 +66,15 @@ export function Home() {
             <div className="split-text">
               <span className="eyebrow">Teclados</span>
               <h3>Tu escritorio, a tu manera</h3>
-              <span className="link-arrow">Comprar teclados</span>
+              <span className="link-arrow">Ver teclados</span>
             </div>
           </a>
           <a href={href.category('webcams')} className="split-card">
-            <SmartImage src={categories[3].image} alt="Webcams" fallbackIcon="webcam" />
+            <SmartImage src={categories[2].image} alt="Cámaras web" fallbackIcon="webcam" />
             <div className="split-text">
-              <span className="eyebrow">Webcams</span>
+              <span className="eyebrow">Cámaras</span>
               <h3>Luce como un profesional en cada llamada</h3>
-              <span className="link-arrow">Comprar webcams</span>
+              <span className="link-arrow">Ver cámaras</span>
             </div>
           </a>
         </div>
@@ -83,13 +83,13 @@ export function Home() {
       <section className="feature-band">
         <div className="container feature-inner">
           <div className="feature-text">
-            <span className="eyebrow">Strike Gaming</span>
+            <span className="eyebrow">Gaming</span>
             <h2>Diseñado con jugadores profesionales</h2>
-            <p>Sensores de alta precisión, conexión inalámbrica sin retraso y materiales ultraligeros. Cada producto Strike se prueba en torneos antes de llegar a tus manos.</p>
-            <a href={href.category('gaming')} className="btn btn-primary">Explorar gaming</a>
+            <p>Ratones y audífonos gaming de Logitech G, Razer, SteelSeries y HyperX: sensores de alta precisión, conexión inalámbrica y diseños ultraligeros.</p>
+            <a href={href.category('ratones')} className="btn btn-primary">Ver ratones gaming</a>
           </div>
           <div className="feature-media">
-            <SmartImage src={heroImages.feature} alt="Equipo gaming Strike" fallbackIcon="gamepad" />
+            <SmartImage src={heroImages.feature} alt="Ratón gaming Logitech G" fallbackIcon="gamepad" />
           </div>
         </div>
       </section>

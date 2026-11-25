@@ -1,6 +1,6 @@
 # Tech Studio
 
-Tienda online de periféricos (ratones, teclados, audífonos, webcams, gaming y parlantes) hecha con React, Vite y TypeScript.
+Tienda online de tecnología (ratones, teclados, cámaras web, audífonos de diadema e in-ears) con productos reales de Amazon, hecha con React, Vite y TypeScript. Proyecto académico de demostración.
 
 ## Cómo correrla
 
@@ -15,10 +15,22 @@ npm run build    # compila a dist/
 - Barra de anuncios rotativa, menú con desplegable de productos, búsqueda y menú móvil.
 - Inicio con carrusel principal, categorías, productos destacados por pestañas, promociones y beneficios.
 - Páginas de categoría y búsqueda con filtros y orden.
-- Página de producto con selector de color, cantidad y productos relacionados.
+- Página de producto con precio (si lo hay), botón a Amazon, cantidad y productos relacionados.
 - Carrito lateral que se guarda en el navegador, con barra de envío gratis.
 
 El pago es de demostración: el botón "Ir a pagar" no cobra nada.
+
+## Catálogo
+
+Muestra de 51 productos reales que se venden en Amazon, en 5 categorías: ratones (13), teclados (7), cámaras (6), diademas (15) e in-ears (10). Están en `src/data/products.ts`.
+
+- **Origen:** cada producto corresponde a un listado de amazon.com y guarda su código (`asin`). No se hizo scraping de Amazon: los listados se identificaron con un buscador web.
+- **Foto:** imagen principal del listado en Amazon, cargada a partir del ASIN.
+- **Precio:** solo 14 productos tienen precio, y cada uno indica su fuente (`priceNote`): "Precio visto en Amazon" o "Precio de la tienda oficial de Logitech". Los demás muestran el botón "Ver precio en Amazon" y no se pueden añadir al carrito. Los precios no se actualizan solos.
+- **Amazon:** cada producto enlaza a `amazon.com/dp/<ASIN>`.
+- No se muestran calificaciones porque no hay datos reales de reseñas.
+
+Para añadir un producto, agrega una fila en la categoría correspondiente con su ASIN, nombre, marca y descripción corta. La foto, el enlace y las metas SEO se generan solos.
 
 ## Estructura
 
@@ -49,4 +61,4 @@ src/
 
 Para probarlo en local: `npm run build` y luego `npx vite preview`.
 
-Las fotos se cargan desde el CDN de Logitech y pertenecen a Logitech. Este proyecto es un trabajo académico sin fines comerciales; para publicarlo o venderlo habría que reemplazarlas por fotos propias. Si alguna no carga, se muestra un ícono en su lugar.
+Las fotos de producto se cargan desde Amazon y las de portada desde el CDN de Logitech; pertenecen a sus dueños. Este proyecto es un trabajo académico sin fines comerciales; para publicarlo o venderlo habría que reemplazarlas por fotos propias. Si alguna no carga, se muestra un ícono en su lugar.

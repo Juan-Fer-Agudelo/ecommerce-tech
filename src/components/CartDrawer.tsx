@@ -50,7 +50,7 @@ export function CartDrawer() {
                   <SmartImage src={l.product.image} alt={l.product.name} fallbackIcon={categories.find((c) => c.id === l.product.category)?.icon} />
                   <div className="line-info">
                     <a href={href.product(l.productId)} onClick={close} className="line-name">{l.product.name}</a>
-                    <span className="muted">Color: {l.color}</span>
+                    <span className="muted">{l.product.brand}</span>
                     <div className="qty">
                       <button aria-label="Quitar uno" onClick={() => setQty(l.productId, l.color, l.qty - 1)}><Icon name="minus" size={16} /></button>
                       <span>{l.qty}</span>
@@ -58,7 +58,7 @@ export function CartDrawer() {
                     </div>
                   </div>
                   <div className="line-right">
-                    <strong>{formatPrice(l.qty * l.product.price)}</strong>
+                    <strong>{formatPrice(l.qty * (l.product.price ?? 0))}</strong>
                     <button className="icon-btn" aria-label="Eliminar" onClick={() => remove(l.productId, l.color)}><Icon name="trash" size={18} /></button>
                   </div>
                 </li>

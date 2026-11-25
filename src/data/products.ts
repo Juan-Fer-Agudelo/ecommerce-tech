@@ -1,10 +1,4 @@
-export type CategoryId =
-  | 'ratones'
-  | 'teclados'
-  | 'audio'
-  | 'webcams'
-  | 'gaming'
-  | 'parlantes';
+export type CategoryId = 'ratones' | 'teclados' | 'webcams' | 'diademas' | 'inears';
 
 export interface Category {
   id: CategoryId;
@@ -16,44 +10,43 @@ export interface Category {
   metaDescription: string;
 }
 
+export type Badge = 'Nuevo' | 'Oferta' | 'Más vendido';
+
 export interface Product {
   id: string;
+  /** Código del producto en Amazon. */
+  asin: string;
   name: string;
+  brand: string;
   category: CategoryId;
-  price: number;
+  /** Precio en USD. Si no hay un precio confiable, queda vacío y se muestra "Ver precio en Amazon". */
+  price?: number;
+  /** Precio normal, si hay descuento. */
   oldPrice?: number;
-  rating: number;
-  reviews: number;
-  badge?: 'Nuevo' | 'Oferta' | 'Más vendido';
+  /** De dónde y cuándo se tomó el precio. */
+  priceNote?: string;
+  amazonUrl: string;
+  badge?: Badge;
   short: string;
-  description: string;
-  features: string[];
-  colors: { name: string; hex: string }[];
   image: string;
   /** SEO: <title>, og:title y twitter:title (máx. ~60 caracteres). */
   metaTitle: string;
   /** SEO: meta description y og:description (máx. ~160 caracteres). */
   metaDescription: string;
-  /** SEO: og:image y twitter:image, 1200x630. */
+  /** SEO: og:image y twitter:image. */
   metaImage: string;
 }
 
-// Fotos del CDN de Logitech (solo para uso académico, no comercial).
-const CDN = 'https://resource.logitech.com';
-const u = (path: string, w = 900) => `${CDN}/w_${w},c_fill,q_auto,f_auto/content/dam/${path}`;
-/** Imagen para redes sociales en el tamaño recomendado (1200x630). */
-const og = (path: string) => `${CDN}/w_1200,h_630,c_fill,q_auto,f_jpg/content/dam/${path}`;
+/* ---------- Imágenes ---------- */
+
+// Fotos de portada y categorías: CDN de Logitech. Fotos de producto: imagen principal del
+// listado en Amazon, a partir del ASIN. Uso académico, no comercial.
+const LOGI = 'https://resource.logitech.com';
+const u = (path: string, w = 900) => `${LOGI}/w_${w},c_fill,q_auto,f_auto/content/dam/${path}`;
+const og = (path: string) => `${LOGI}/w_1200,h_630,c_fill,q_auto,f_jpg/content/dam/${path}`;
+const amazonImage = (asin: string) => `https://images-na.ssl-images-amazon.com/images/P/${asin}.01._SCLZZZZZZZ_SX500_.jpg`;
 
 export const defaultMetaImage = og('logitech/en/homepage/banners/cards/hand-using-mx-master-4.jpg');
-
-export const categories: Category[] = [
-  { id: 'ratones', name: 'Ratones', tagline: 'Precisión en cada clic', icon: 'mouse', image: u('logitech/en/plp/mice/standard-cards/category-card-mice.jpg'), metaTitle: 'Ratones inalámbricos y ergonómicos | Tech Studio', metaDescription: 'Ratones inalámbricos, ergonómicos y compactos para trabajar y crear. Sensores precisos, clics silenciosos y batería de larga duración.' },
-  { id: 'teclados', name: 'Teclados', tagline: 'Escribe más cómodo', icon: 'keyboard', image: u('logitech/en/plp/keyboards/standard-cards/category-card-keyboards.jpg'), metaTitle: 'Teclados inalámbricos y mecánicos | Tech Studio', metaDescription: 'Teclados inalámbricos, retroiluminados y mecánicos para Windows y macOS. Escribe más cómodo con envío gratis y 2 años de garantía.' },
-  { id: 'audio', name: 'Audífonos', tagline: 'Sonido que se siente', icon: 'headset', image: u('logitech/en/homepage/banners/cards/girl-listening-zone300-rose-headset.jpg'), metaTitle: 'Audífonos inalámbricos y con ANC | Tech Studio', metaDescription: 'Audífonos con cancelación de ruido e intrauditivos para música, trabajo y llamadas. Sonido claro y batería para todo el día.' },
-  { id: 'webcams', name: 'Webcams', tagline: 'Luce bien en cada llamada', icon: 'webcam', image: u('logitech/en/plp/webcams/standard-cards/category-card-webcams.jpg'), metaTitle: 'Webcams 4K y Full HD para videollamadas | Tech Studio', metaDescription: 'Webcams 4K y Full HD con corrección de luz y micrófonos integrados. Luce profesional en cada videollamada o transmisión.' },
-  { id: 'gaming', name: 'Gaming', tagline: 'Hecho para ganar', icon: 'gamepad', image: u('gaming/en/homepage/2025/gaming-keyboard.jpg'), metaTitle: 'Ratones y audífonos gaming | Tech Studio', metaDescription: 'Equipo gaming Strike: ratones ultraligeros, audífonos con sonido 7.1 y conexión inalámbrica de 1 ms. Hecho para ganar.' },
-  { id: 'parlantes', name: 'Parlantes', tagline: 'Llena la habitación', icon: 'speaker', image: u('logitech/en/homepage/banners/cards/person-holding-miniroll-in-hand-hp-card.jpg'), metaTitle: 'Parlantes Bluetooth y de escritorio | Tech Studio', metaDescription: 'Parlantes Bluetooth portátiles y de escritorio. Sonido de 360 grados, resistencia al agua y diseño compacto para cualquier espacio.' },
-];
 
 export const heroImages = {
   mouse: u('logitech/en/homepage/banners/cards/hand-using-mx-master-4.jpg', 1920),
@@ -62,236 +55,113 @@ export const heroImages = {
   feature: u('gaming/en/homepage/2026/interactive-hero-banner/g502-plus-hero-banner-desktop-2.jpg', 1400),
 };
 
+export const categories: Category[] = [
+  { id: 'ratones', name: 'Ratones', tagline: 'Para trabajar y para jugar', icon: 'mouse', image: u('logitech/en/plp/mice/standard-cards/category-card-mice.jpg'), metaTitle: 'Ratones inalámbricos y gaming | Tech Studio', metaDescription: 'Ratones Logitech, Razer, SteelSeries y Apple: inalámbricos, ergonómicos y gaming. Compara modelos y míralos en Amazon.' },
+  { id: 'teclados', name: 'Teclados', tagline: 'Escribe más cómodo', icon: 'keyboard', image: u('logitech/en/plp/keyboards/standard-cards/category-card-keyboards.jpg'), metaTitle: 'Teclados inalámbricos y mecánicos | Tech Studio', metaDescription: 'Teclados Logitech, Apple y AULA: inalámbricos, mecánicos y ergonómicos para Windows y Mac. Compara modelos y míralos en Amazon.' },
+  { id: 'webcams', name: 'Cámaras', tagline: 'Luce bien en cada llamada', icon: 'webcam', image: u('logitech/en/plp/webcams/standard-cards/category-card-webcams.jpg'), metaTitle: 'Cámaras web 4K y Full HD | Tech Studio', metaDescription: 'Cámaras web Logitech, Razer, Elgato y Microsoft para videollamadas y streaming, en 4K y Full HD. Míralas en Amazon.' },
+  { id: 'diademas', name: 'Diademas', tagline: 'Sonido que te envuelve', icon: 'headset', image: u('logitech/en/homepage/banners/cards/girl-listening-zone300-rose-headset.jpg'), metaTitle: 'Audífonos de diadema y gaming | Tech Studio', metaDescription: 'Audífonos de diadema Sony, Bose, Logitech, HyperX, SteelSeries y Razer: con cancelación de ruido y para gaming. Míralos en Amazon.' },
+  { id: 'inears', name: 'In-ears', tagline: 'Tu música en el bolsillo', icon: 'earbuds', image: u('logitech/en/homepage/banners/cards/ue-pro-in-ear-tile.jpg'), metaTitle: 'Audífonos in-ear inalámbricos | Tech Studio', metaDescription: 'Audífonos in-ear inalámbricos Apple AirPods, Sony, Samsung Galaxy Buds, Bose y Beats. Compara modelos y míralos en Amazon.' },
+];
+
+/* ---------- Catálogo ---------- */
+
+const SEEN = 'Precio visto en Amazon';
+const OFFICIAL = 'Precio de la tienda oficial de Logitech (25 de noviembre de 2026)';
+
+interface Row {
+  asin: string;
+  id: string;
+  name: string;
+  brand: string;
+  short: string;
+  price?: number;
+  oldPrice?: number;
+  priceNote?: string;
+  badge?: Badge;
+}
+
+const clip = (s: string, max: number) => (s.length <= max ? s : s.slice(0, max - 1).trimEnd() + '…');
+const usd = (n: number) => `$${n.toFixed(2)}`;
+
+function build(category: CategoryId, rows: Row[]): Product[] {
+  return rows.map((r) => {
+    const badge = r.badge ?? (r.oldPrice ? 'Oferta' : undefined);
+    const priceText = r.price ? ` Desde ${usd(r.price)}.` : '';
+    return {
+      ...r,
+      category,
+      badge,
+      amazonUrl: `https://www.amazon.com/dp/${r.asin}`,
+      image: amazonImage(r.asin),
+      metaImage: amazonImage(r.asin),
+      metaTitle: clip(r.name, 60 - ' | Tech Studio'.length) + ' | Tech Studio',
+      metaDescription: clip(`${r.name}: ${r.short.charAt(0).toLowerCase()}${r.short.slice(1)}.${priceText} Míralo en Tech Studio y cómpralo en Amazon.`, 160),
+    };
+  });
+}
+
 export const products: Product[] = [
-  {
-    id: 'ts-glide-pro',
-    name: 'Glide Pro X',
-    category: 'ratones',
-    price: 99.99,
-    rating: 4.8,
-    reviews: 2140,
-    badge: 'Más vendido',
-    short: 'Ratón inalámbrico ergonómico de alto rendimiento',
-    description:
-      'Diseñado para jornadas largas. Sensor de 8000 DPI que funciona sobre vidrio, rueda magnética que recorre mil líneas por segundo y batería de hasta 70 días con una sola carga.',
-    features: ['Sensor 8K DPI sobre cualquier superficie', 'Rueda electromagnética silenciosa', 'Conexión con 3 equipos', 'Carga USB-C: 1 minuto = 3 horas'],
-    colors: [
-      { name: 'Grafito', hex: '#2b2b2b' },
-      { name: 'Gris pálido', hex: '#d9d9d6' },
-    ],
-    image: u('logitech/en/homepage/delorean-hp/cards/hand-holding-mx-master-3s-pale-grey-on-a-desk-with-glass-surface.jpg'),
-    metaTitle: 'Glide Pro X: ratón inalámbrico ergonómico | Tech Studio',
-    metaDescription: 'Compra el Glide Pro X: sensor de 8000 DPI que funciona sobre vidrio, rueda magnética silenciosa y hasta 70 días de batería. Envío gratis y 2 años de garantía.',
-    metaImage: og('logitech/en/homepage/delorean-hp/cards/hand-holding-mx-master-3s-pale-grey-on-a-desk-with-glass-surface.jpg'),
-  },
-  {
-    id: 'ts-glide-mini',
-    name: 'Glide Mini',
-    category: 'ratones',
-    price: 49.99,
-    oldPrice: 59.99,
-    rating: 4.6,
-    reviews: 980,
-    badge: 'Oferta',
-    short: 'Ratón compacto y silencioso para llevar',
-    description: 'Pequeño, liviano y con clics 90% más silenciosos. Ideal para el portátil y para trabajar desde cualquier lugar.',
-    features: ['Clics silenciosos', 'Bluetooth y receptor USB', 'Hasta 24 meses de pila', 'Plástico reciclado'],
-    colors: [
-      { name: 'Rosa', hex: '#f2c6c2' },
-      { name: 'Grafito', hex: '#2b2b2b' },
-      { name: 'Blanco', hex: '#f4f4f2' },
-    ],
-    image: u('logitech/en/homepage/delorean-hp/cards/mx-anywhere-3s.jpg'),
-    metaTitle: 'Glide Mini: ratón compacto y silencioso | Tech Studio',
-    metaDescription: 'Glide Mini, el ratón pequeño para tu portátil: clics 90% más silenciosos, Bluetooth o receptor USB y hasta 24 meses de pila. Ahora en oferta.',
-    metaImage: og('logitech/en/homepage/delorean-hp/cards/mx-anywhere-3s.jpg'),
-  },
-  {
-    id: 'ts-keys-studio',
-    name: 'Keys Studio',
-    category: 'teclados',
-    price: 119.99,
-    rating: 4.7,
-    reviews: 1530,
-    badge: 'Más vendido',
-    short: 'Teclado inalámbrico retroiluminado de perfil bajo',
-    description:
-      'Teclas esféricas que se adaptan a la forma de los dedos, retroiluminación inteligente que se activa al acercar las manos y conexión con hasta tres dispositivos.',
-    features: ['Retroiluminación inteligente', 'Teclas de perfil bajo', 'Cambio entre 3 equipos', 'Compatible con Windows y macOS'],
-    colors: [
-      { name: 'Grafito', hex: '#2b2b2b' },
-      { name: 'Gris pálido', hex: '#d9d9d6' },
-    ],
-    image: u('logitech/en/homepage/banners/cards/signature-slim-solar-k980-keyboard.jpg'),
-    metaTitle: 'Keys Studio: teclado inalámbrico con luz | Tech Studio',
-    metaDescription: 'Teclado Keys Studio de perfil bajo con retroiluminación inteligente y conexión con 3 equipos. Compatible con Windows y macOS. Envío gratis.',
-    metaImage: og('logitech/en/homepage/banners/cards/signature-slim-solar-k980-keyboard.jpg'),
-  },
-  {
-    id: 'ts-keys-mech',
-    name: 'Keys Mech TKL',
-    category: 'teclados',
-    price: 149.99,
-    rating: 4.6,
-    reviews: 640,
-    badge: 'Nuevo',
-    short: 'Teclado mecánico sin pad numérico',
-    description: 'Interruptores táctiles silenciosos, cuerpo de aluminio y formato compacto que deja más espacio para el ratón.',
-    features: ['Interruptores táctiles', 'Cuerpo de aluminio', 'Retroiluminación RGB', 'USB-C desmontable'],
-    colors: [{ name: 'Negro', hex: '#151515' }],
-    image: u('logitech/en/homepage/banners/cards/alto-keys-k98m-desktop-card.jpg'),
-    metaTitle: 'Keys Mech TKL: teclado mecánico compacto | Tech Studio',
-    metaDescription: 'Keys Mech TKL: teclado mecánico sin pad numérico, interruptores táctiles silenciosos, cuerpo de aluminio y RGB. Más espacio en tu escritorio.',
-    metaImage: og('logitech/en/homepage/banners/cards/alto-keys-k98m-desktop-card.jpg'),
-  },
-  {
-    id: 'ts-wave-anc',
-    name: 'Wave ANC',
-    category: 'audio',
-    price: 199.99,
-    oldPrice: 229.99,
-    rating: 4.7,
-    reviews: 870,
-    badge: 'Oferta',
-    short: 'Audífonos inalámbricos con cancelación de ruido',
-    description: 'Cancelación activa de ruido, micrófono con reducción de ruido para llamadas y hasta 50 horas de batería.',
-    features: ['Cancelación activa de ruido', '50 horas de batería', 'Micrófono con IA para llamadas', 'Bluetooth multipunto'],
-    colors: [
-      { name: 'Grafito', hex: '#2b2b2b' },
-      { name: 'Arena', hex: '#d8cbb8' },
-    ],
-    image: u('logitech/en/homepage/banners/cards/zone-wireless-2-es-zone-wired-2.jpg'),
-    metaTitle: 'Wave ANC: audífonos con cancelación de ruido | Tech Studio',
-    metaDescription: 'Audífonos inalámbricos Wave ANC con cancelación activa de ruido, micrófono con IA para llamadas y 50 horas de batería. Hasta 15% de descuento.',
-    metaImage: og('logitech/en/homepage/banners/cards/zone-wireless-2-es-zone-wired-2.jpg'),
-  },
-  {
-    id: 'ts-wave-buds',
-    name: 'Wave Buds',
-    category: 'audio',
-    price: 129.99,
-    rating: 4.4,
-    reviews: 410,
-    short: 'Audífonos intrauditivos para trabajar y escuchar música',
-    description: 'Ajuste cómodo para todo el día, modo de transparencia y estuche de carga inalámbrica.',
-    features: ['Modo transparencia', 'Carga inalámbrica', 'Resistentes al agua IPX4', '6 + 18 horas de batería'],
-    colors: [
-      { name: 'Blanco', hex: '#f4f4f2' },
-      { name: 'Negro', hex: '#151515' },
-    ],
-    image: u('logitech/en/homepage/banners/cards/ue-pro-in-ear-tile.jpg'),
-    metaTitle: 'Wave Buds: audífonos intrauditivos | Tech Studio',
-    metaDescription: 'Wave Buds: audífonos intrauditivos con modo transparencia, carga inalámbrica y resistencia al agua IPX4. Hasta 24 horas de música con el estuche.',
-    metaImage: og('logitech/en/homepage/banners/cards/ue-pro-in-ear-tile.jpg'),
-  },
-  {
-    id: 'ts-view-4k',
-    name: 'View 4K',
-    category: 'webcams',
-    price: 179.99,
-    rating: 4.5,
-    reviews: 520,
-    badge: 'Nuevo',
-    short: 'Webcam 4K con corrección de luz automática',
-    description: 'Imagen 4K Ultra HD, encuadre automático y corrección de luz para que te veas bien con cualquier iluminación.',
-    features: ['4K a 30 fps / 1080p a 60 fps', 'Encuadre automático', 'Tapa de privacidad', 'Dos micrófonos'],
-    colors: [{ name: 'Grafito', hex: '#2b2b2b' }],
-    image: u('logitech/en/homepage/cards/mx-brio-webcam-mounted-on-top-of-computer-monitor.jpg'),
-    metaTitle: 'View 4K: webcam 4K con encuadre automático | Tech Studio',
-    metaDescription: 'Webcam View 4K Ultra HD con corrección de luz, encuadre automático, dos micrófonos y tapa de privacidad. Luce bien en cada videollamada.',
-    metaImage: og('logitech/en/homepage/cards/mx-brio-webcam-mounted-on-top-of-computer-monitor.jpg'),
-  },
-  {
-    id: 'ts-view-hd',
-    name: 'View HD',
-    category: 'webcams',
-    price: 69.99,
-    rating: 4.3,
-    reviews: 1290,
-    short: 'Webcam Full HD 1080p para videollamadas',
-    description: 'Video Full HD nítido y micrófono estéreo. Se conecta y funciona, sin instalar nada.',
-    features: ['1080p a 30 fps', 'Micrófono estéreo', 'Clip universal', 'Plug and play'],
-    colors: [{ name: 'Negro', hex: '#151515' }],
-    image: u('logitech/en/homepage/cards/litra-glow-mx-brio-mounted-on-monitor.jpg'),
-    metaTitle: 'View HD: webcam Full HD 1080p | Tech Studio',
-    metaDescription: 'Webcam View HD 1080p con micrófono estéreo y clip universal. Se conecta por USB y funciona al instante, sin instalar nada. Envío gratis.',
-    metaImage: og('logitech/en/homepage/cards/litra-glow-mx-brio-mounted-on-monitor.jpg'),
-  },
-  {
-    id: 'ts-strike-g',
-    name: 'Strike G Lightspeed',
-    category: 'gaming',
-    price: 129.99,
-    rating: 4.8,
-    reviews: 3020,
-    badge: 'Más vendido',
-    short: 'Ratón gaming inalámbrico ultraligero de 60 g',
-    description: 'Sensor de 25K DPI, conexión inalámbrica de 1 ms y solo 60 gramos de peso. Hecho con jugadores profesionales.',
-    features: ['60 g de peso', 'Sensor 25K DPI', 'Inalámbrico de 1 ms', '70 horas de batería'],
-    colors: [
-      { name: 'Negro', hex: '#151515' },
-      { name: 'Blanco', hex: '#f4f4f2' },
-    ],
-    image: u('gaming/en/homepage/2025/limited-edition-pro-x-superlight-2-cyan-desktop.jpg'),
-    metaTitle: 'Strike G Lightspeed: ratón gaming de 60 g | Tech Studio',
-    metaDescription: 'Ratón gaming inalámbrico Strike G Lightspeed: 60 gramos, sensor de 25K DPI, conexión de 1 ms y 70 horas de batería. Hecho con jugadores pro.',
-    metaImage: og('gaming/en/homepage/2025/limited-edition-pro-x-superlight-2-cyan-desktop.jpg'),
-  },
-  {
-    id: 'ts-strike-headset',
-    name: 'Strike Pro Headset',
-    category: 'gaming',
-    price: 159.99,
-    oldPrice: 179.99,
-    rating: 4.6,
-    reviews: 1180,
-    badge: 'Oferta',
-    short: 'Auriculares gaming con sonido envolvente 7.1',
-    description: 'Drivers de 50 mm, sonido envolvente y micrófono desmontable con filtros de voz en tiempo real.',
-    features: ['Sonido envolvente 7.1', 'Drivers de 50 mm', 'Micrófono desmontable', 'Almohadillas de memory foam'],
-    colors: [{ name: 'Negro', hex: '#151515' }],
-    image: u('gaming/en/homepage/2025/gaming-headsets-audio.jpg'),
-    metaTitle: 'Strike Pro Headset: audífonos gaming 7.1 | Tech Studio',
-    metaDescription: 'Audífonos gaming Strike Pro con sonido envolvente 7.1, drivers de 50 mm y micrófono desmontable con filtros de voz. Ahora con descuento.',
-    metaImage: og('gaming/en/homepage/2025/gaming-headsets-audio.jpg'),
-  },
-  {
-    id: 'ts-pulse-360',
-    name: 'Pulse 360',
-    category: 'parlantes',
-    price: 89.99,
-    rating: 4.5,
-    reviews: 760,
-    short: 'Parlante Bluetooth portátil resistente al agua',
-    description: 'Sonido de 360 grados, resistente al agua y al polvo IP67 y 15 horas de música.',
-    features: ['Sonido 360°', 'IP67', '15 horas de batería', 'Emparejamiento doble'],
-    colors: [
-      { name: 'Azul', hex: '#2f5d8a' },
-      { name: 'Negro', hex: '#151515' },
-      { name: 'Coral', hex: '#e8735a' },
-    ],
-    image: u('logitech/en/homepage/banners/cards/person-holding-miniroll-in-hand-hp-card.jpg'),
-    metaTitle: 'Pulse 360: parlante Bluetooth a prueba de agua | Tech Studio',
-    metaDescription: 'Parlante portátil Pulse 360 con sonido de 360 grados, resistencia IP67 al agua y al polvo y 15 horas de batería. Elige entre tres colores.',
-    metaImage: og('logitech/en/homepage/banners/cards/person-holding-miniroll-in-hand-hp-card.jpg'),
-  },
-  {
-    id: 'ts-desk-duo',
-    name: 'Desk Duo',
-    category: 'parlantes',
-    price: 79.99,
-    rating: 4.4,
-    reviews: 330,
-    badge: 'Nuevo',
-    short: 'Parlantes de escritorio con Bluetooth',
-    description: 'Dos parlantes compactos con sonido equilibrado, entrada de 3.5 mm y control de volumen al frente.',
-    features: ['Bluetooth y 3.5 mm', 'Control frontal', 'Alimentación USB', 'Diseño compacto'],
-    colors: [{ name: 'Blanco', hex: '#f4f4f2' }],
-    image: u('logitech/en/homepage/banners/cards/macbook-neo-desk-setup.jpg'),
-    metaTitle: 'Desk Duo: parlantes de escritorio Bluetooth | Tech Studio',
-    metaDescription: 'Parlantes de escritorio Desk Duo con Bluetooth y entrada de 3.5 mm, control de volumen frontal y alimentación USB. Sonido limpio y compacto.',
-    metaImage: og('logitech/en/homepage/banners/cards/macbook-neo-desk-setup.jpg'),
-  },
+  ...build('ratones', [
+    { asin: 'B07CMS5Q6P', id: 'logitech-g305', name: 'Logitech G305 LIGHTSPEED', brand: 'Logitech G', short: 'Ratón gaming inalámbrico con sensor de 12.000 DPI', price: 49.99, oldPrice: 59.99, priceNote: OFFICIAL, badge: 'Más vendido' },
+    { asin: 'B07GBZ4Q68', id: 'logitech-g502-hero', name: 'Logitech G502 HERO', brand: 'Logitech G', short: 'Ratón gaming con cable de alto rendimiento', price: 37.99, oldPrice: 69.99, priceNote: `${SEEN} (junio de 2026)` },
+    { asin: 'B0DL72PK1P', id: 'apple-magic-mouse', name: 'Apple Magic Mouse (USB-C)', brand: 'Apple', short: 'Ratón inalámbrico con superficie multitáctil', price: 63.99, oldPrice: 79, priceNote: `${SEEN} (mayo de 2026)` },
+    { asin: 'B09HMKFDXC', id: 'logitech-mx-master-3s', name: 'Logitech MX Master 3S', brand: 'Logitech', short: 'Ratón inalámbrico de alto rendimiento con sensor 8K DPI y clics silenciosos', price: 75.99, oldPrice: 99.99, priceNote: OFFICIAL, badge: 'Más vendido' },
+    { asin: 'B09HMV6K1W', id: 'logitech-mx-master-3s-mac', name: 'Logitech MX Master 3S para Mac', brand: 'Logitech', short: 'Ratón Bluetooth para Mac y iPad con sensor 8K DPI y clics silenciosos' },
+    { asin: 'B07W6JP97F', id: 'logitech-mx-anywhere-3s', name: 'Logitech MX Anywhere 3S', brand: 'Logitech', short: 'Ratón compacto inalámbrico con sensor 8K DPI para cualquier superficie', price: 66.99, oldPrice: 69.99, priceNote: OFFICIAL },
+    { asin: 'B0GMLBSSTD', id: 'razer-viper-v4-pro', name: 'Razer Viper V4 Pro', brand: 'Razer', short: 'Ratón gaming inalámbrico para esports de 49 g con batería de 180 horas', badge: 'Nuevo' },
+    { asin: 'B0CW25XR5R', id: 'razer-viper-v3-pro', name: 'Razer Viper V3 Pro', brand: 'Razer', short: 'Ratón gaming inalámbrico para esports de 54 g con sensor de 35K DPI' },
+    { asin: 'B0CF4DJM7F', id: 'razer-viper-v3-hyperspeed', name: 'Razer Viper V3 HyperSpeed', brand: 'Razer', short: 'Ratón gaming inalámbrico de 82 g con sensor de 30K DPI' },
+    { asin: 'B08565C5BB', id: 'razer-viper-ultimate', name: 'Razer Viper Ultimate', brand: 'Razer', short: 'Ratón gaming inalámbrico ligero con sensor de 20K DPI y 70 horas de batería' },
+    { asin: 'B094PS5RZQ', id: 'razer-deathadder-essential', name: 'Razer DeathAdder Essential', brand: 'Razer', short: 'Ratón gaming ergonómico con cable, sensor de 6400 DPI y 5 botones' },
+    { asin: 'B093LSMKL3', id: 'steelseries-rival-5', name: 'SteelSeries Rival 5', brand: 'SteelSeries', short: 'Ratón gaming con cable y botones programables' },
+    { asin: 'B0851H51FC', id: 'steelseries-prime', name: 'SteelSeries Prime', brand: 'SteelSeries', short: 'Ratón gaming con cable diseñado para esports' },
+  ]),
+  ...build('teclados', [
+    { asin: 'B0CQ53BKWT', id: 'aula-f75', name: 'AULA F75', brand: 'AULA', short: 'Teclado mecánico 75% con switches intercambiables y retroiluminación', badge: 'Más vendido' },
+    { asin: 'B0BTNYGHN7', id: 'logitech-wave-keys', name: 'Logitech Wave Keys', brand: 'Logitech', short: 'Teclado ergonómico inalámbrico con reposamanos acolchado' },
+    { asin: 'B0BKW3LB2B', id: 'logitech-mx-keys-s', name: 'Logitech MX Keys S', brand: 'Logitech', short: 'Teclado inalámbrico de perfil bajo con retroiluminación inteligente', price: 104.99, oldPrice: 109.99, priceNote: OFFICIAL },
+    { asin: 'B0BXX2DHY2', id: 'logitech-mx-keys-s-mac', name: 'Logitech MX Keys S para Mac', brand: 'Logitech', short: 'Teclado inalámbrico retroiluminado con distribución para Mac' },
+    { asin: 'B0FH88CY7L', id: 'logitech-signature-slim-solar-k980', name: 'Logitech Signature Slim Solar+ K980', brand: 'Logitech', short: 'Teclado inalámbrico que se carga con luz solar o artificial', price: 72.99, oldPrice: 99.99, priceNote: OFFICIAL },
+    { asin: 'B0DL6LV7Q6', id: 'apple-magic-keyboard', name: 'Apple Magic Keyboard (USB-C)', brand: 'Apple', short: 'Teclado Bluetooth compacto y recargable para Mac' },
+    { asin: 'B07BR9ZBZ5', id: 'apple-magic-keyboard-numerico', name: 'Apple Magic Keyboard con teclado numérico', brand: 'Apple', short: 'Teclado inalámbrico recargable con teclado numérico, gris espacial' },
+  ]),
+  ...build('webcams', [
+    { asin: 'B07K986YLL', id: 'logitech-c920s', name: 'Logitech C920S HD Pro', brand: 'Logitech', short: 'Cámara web Full HD 1080p con tapa de privacidad', price: 54.99, oldPrice: 69.99, priceNote: OFFICIAL, badge: 'Más vendido' },
+    { asin: 'B006JH8T3S', id: 'logitech-c920', name: 'Logitech HD Pro C920', brand: 'Logitech', short: 'Cámara web Full HD 1080p para videollamadas y grabación', price: 67.49, priceNote: SEEN },
+    { asin: 'B0CX8S8JLX', id: 'logitech-mx-brio', name: 'Logitech MX Brio', brand: 'Logitech', short: 'Cámara web 4K Ultra HD con imagen mejorada por IA y tapa de privacidad', price: 161.99, oldPrice: 169.99, priceNote: OFFICIAL },
+    { asin: 'B075N1BYWB', id: 'razer-kiyo', name: 'Razer Kiyo', brand: 'Razer', short: 'Cámara web 1080p para streaming con aro de luz ajustable', price: 95.89, oldPrice: 109, priceNote: SEEN },
+    { asin: 'B0DVZG36J8', id: 'elgato-facecam-4k', name: 'Elgato Facecam 4K', brand: 'Elgato', short: 'Cámara web de estudio 4K a 60 fps con sensor Sony STARVIS 2', badge: 'Nuevo' },
+    { asin: 'B009CPC6QA', id: 'microsoft-lifecam-cinema', name: 'Microsoft LifeCam Cinema', brand: 'Microsoft', short: 'Cámara web HD 720p con micrófono con reducción de ruido' },
+  ]),
+  ...build('diademas', [
+    { asin: 'B0F3PT1VBL', id: 'sony-wh-1000xm6', name: 'Sony WH-1000XM6', brand: 'Sony', short: 'Audífonos inalámbricos con cancelación de ruido y hasta 30 horas de batería', badge: 'Nuevo' },
+    { asin: 'B0BS1QCFHX', id: 'sony-wh-ch720n', name: 'Sony WH-CH720N', brand: 'Sony', short: 'Audífonos inalámbricos con cancelación de ruido y hasta 35 horas de batería' },
+    { asin: 'B07RM8WQ8G', id: 'sony-wh-xb900n', name: 'Sony WH-XB900N', brand: 'Sony', short: 'Audífonos Bluetooth con cancelación de ruido y bajos potentes' },
+    { asin: 'B0CCZ26B5V', id: 'bose-quietcomfort', name: 'Bose QuietComfort', brand: 'Bose', short: 'Audífonos Bluetooth con cancelación de ruido y hasta 24 horas de batería', price: 349, priceNote: SEEN, badge: 'Más vendido' },
+    { asin: 'B0CCZ1L489', id: 'bose-quietcomfort-ultra', name: 'Bose QuietComfort Ultra', brand: 'Bose', short: 'Audífonos con cancelación de ruido y audio espacial' },
+    { asin: 'B07Q9MJKBV', id: 'bose-headphones-700', name: 'Bose Headphones 700', brand: 'Bose', short: 'Audífonos Bluetooth con cancelación de ruido y micrófono para llamadas' },
+    { asin: 'B09NBVS84T', id: 'logitech-zone-vibe-100', name: 'Logitech Zone Vibe 100', brand: 'Logitech', short: 'Audífonos inalámbricos livianos con micrófono con reducción de ruido', price: 99.99, priceNote: SEEN },
+    { asin: 'B0CSQL6Y21', id: 'logitech-zone-wireless-2', name: 'Logitech Zone Wireless 2', brand: 'Logitech', short: 'Audífonos premium para trabajar con cancelación de ruido híbrida', price: 229.99, oldPrice: 249.99, priceNote: OFFICIAL },
+    { asin: 'B0FLKC5JN4', id: 'cmf-headphone-pro', name: 'CMF by Nothing Headphone Pro', brand: 'CMF by Nothing', short: 'Audífonos con cancelación de ruido, Bluetooth 5.4 y 50 horas de batería' },
+    { asin: 'B0F6NZWPTC', id: 'hyperx-cloud-iii-s-wireless', name: 'HyperX Cloud III S Wireless', brand: 'HyperX', short: 'Audífonos gaming inalámbricos con hasta 120 horas de batería', badge: 'Nuevo' },
+    { asin: 'B0CBQXGZ85', id: 'hyperx-cloud-iii-wireless', name: 'HyperX Cloud III Wireless', brand: 'HyperX', short: 'Audífonos gaming inalámbricos con micrófono' },
+    { asin: 'B0FRNR8Y11', id: 'steelseries-arctis-nova-7-gen-2', name: 'SteelSeries Arctis Nova 7 Wireless Gen 2', brand: 'SteelSeries', short: 'Audífonos gaming inalámbricos multiplataforma', badge: 'Nuevo' },
+    { asin: 'B09KMHMYPF', id: 'steelseries-arctis-7-plus', name: 'SteelSeries Arctis 7+', brand: 'SteelSeries', short: 'Audífonos gaming inalámbricos' },
+    { asin: 'B07SJHG1MJ', id: 'steelseries-arctis-1', name: 'SteelSeries Arctis 1', brand: 'SteelSeries', short: 'Audífonos gaming con cable y diadema reforzada con acero' },
+    { asin: 'B0FC1NMTN5', id: 'razer-blackshark-v3-pro', name: 'Razer BlackShark V3 Pro', brand: 'Razer', short: 'Audífonos gaming inalámbricos con cancelación de ruido para PlayStation' },
+  ]),
+  ...build('inears', [
+    { asin: 'B0D1XD1ZV3', id: 'apple-airpods-pro-2', name: 'Apple AirPods Pro 2', brand: 'Apple', short: 'Audífonos in-ear inalámbricos con cancelación activa de ruido', badge: 'Más vendido' },
+    { asin: 'B0DGHMNQ5Z', id: 'apple-airpods-4', name: 'Apple AirPods 4', brand: 'Apple', short: 'Audífonos inalámbricos con estuche de carga USB-C' },
+    { asin: 'B09JQL3NWT', id: 'apple-airpods-3', name: 'Apple AirPods (3.ª generación)', brand: 'Apple', short: 'Audífonos inalámbricos con audio espacial' },
+    { asin: 'B096SV8SJG', id: 'beats-studio-buds', name: 'Beats Studio Buds', brand: 'Beats', short: 'Audífonos in-ear inalámbricos con cancelación de ruido' },
+    { asin: 'B0B4PSQHD5', id: 'bose-quietcomfort-earbuds-ii', name: 'Bose QuietComfort Earbuds II', brand: 'Bose', short: 'Audífonos in-ear inalámbricos con cancelación de ruido' },
+    { asin: 'B0C33XXS56', id: 'sony-wf-1000xm5', name: 'Sony WF-1000XM5', brand: 'Sony', short: 'Audífonos in-ear con cancelación de ruido, conexión multipunto y resistencia IPX4' },
+    { asin: 'B0BYPFNW6T', id: 'sony-wf-c700n', name: 'Sony WF-C700N', brand: 'Sony', short: 'Audífonos in-ear inalámbricos con cancelación de ruido' },
+    { asin: 'B0D9YZJ3V7', id: 'samsung-galaxy-buds-3-pro', name: 'Samsung Galaxy Buds 3 Pro', brand: 'Samsung', short: 'Audífonos in-ear con cancelación de ruido adaptativa y resistencia IP57' },
+    { asin: 'B0B2SH4CN6', id: 'samsung-galaxy-buds2-pro', name: 'Samsung Galaxy Buds2 Pro', brand: 'Samsung', short: 'Audífonos in-ear inalámbricos con cancelación de ruido' },
+    { asin: 'B0FNRXZV67', id: 'samsung-galaxy-buds-core', name: 'Samsung Galaxy Buds Core', brand: 'Samsung', short: 'Audífonos in-ear inalámbricos, modelo 2025', badge: 'Nuevo' },
+  ]),
 ];
 
 export const formatPrice = (n: number) =>
